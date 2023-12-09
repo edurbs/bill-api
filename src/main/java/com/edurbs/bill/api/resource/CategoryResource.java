@@ -36,21 +36,27 @@ public class CategoryResource {
     
     public ResponseEntity<Category> create(@RequestBody Category category, HttpServletResponse response) {
         Category newCategory = categoryRepository.save(category);        
+        URI uri = getUri(response, newCategory);
+        return ResponseEntity.created(uri).body(newCategory);        
+    }
+
+    
+    @GetMapping("/{id}")
+    public ResponseEntity<Category> getOne(@PathVariable Long id) {        
+        return categoryRepository.findById(id)
+        .map(ResponseEntity::ok)
+        .orElse(ResponseEntity.notFound().build());
+    }
+    
+    
+    
+    private URI getUri(HttpServletResponse response, Category newCategory) {
         URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequestUri()
                 .path("/{id}")
                 .buildAndExpand(newCategory.getId())
                 .toUri();
         response.setHeader("Location", uri.toASCIIString());
-        return ResponseEntity.created(uri).body(newCategory);
-        
+        return uri;
     }
-
-    @GetMapping("/{id}")
-    public Category getOne(@PathVariable Long id) {
-        return categoryRepository.findById(id).orElse(null);
-    }
-    
-    
-
 }
