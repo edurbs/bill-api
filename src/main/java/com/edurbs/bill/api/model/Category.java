@@ -1,4 +1,4 @@
-package com.edurbs.bill.api.billapi.model;
+package com.edurbs.bill.api.model;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
