@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
@@ -48,6 +50,16 @@ public class BillExceptionHandler extends ResponseEntityExceptionHandler {
 
       var myStatus = HttpStatus.BAD_REQUEST;
       return handleExceptionInternal(ex, body, headers, myStatus, request);
+   }
+
+   @ExceptionHandler({EmptyResultDataAccessException.class})   
+   public ResponseEntity<Object> handleEmptyResultDataAccessException(EmptyResultDataAccessException ex, WebRequest request){
+      String userMessage = messageSource.getMessage("recurso.nao-encontrado", null, LocaleContextHolder.getLocale());
+      String debugMessage = ex.toString();
+      List<Error> body = Arrays.asList(new Error(userMessage, debugMessage));
+      var status = HttpStatus.NOT_FOUND;
+      return handleExceptionInternal(ex, body, new HttpHeaders(), status, request);
+
    }
 
    private List<Error> createErrorsList(BindingResult bindingResult) {
