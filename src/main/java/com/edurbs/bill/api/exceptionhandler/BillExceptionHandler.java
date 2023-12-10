@@ -34,7 +34,7 @@ public class BillExceptionHandler extends ResponseEntityExceptionHandler {
          HttpHeaders headers, HttpStatus status, WebRequest request) {
 
       String userMessage = messageSource.getMessage("mensagem.invalida", null, LocaleContextHolder.getLocale());
-      String debugMessage = ex.getCause().toString();
+      String debugMessage = ex.getCause() != null ? ex.getCause().toString() : ex.toString();
 
       List<Error> body = Arrays.asList(new Error(userMessage, debugMessage));
 
@@ -60,7 +60,7 @@ public class BillExceptionHandler extends ResponseEntityExceptionHandler {
       var status = HttpStatus.NOT_FOUND;
       return handleExceptionInternal(ex, body, new HttpHeaders(), status, request);
 
-   }
+   }  
 
    private List<Error> createErrorsList(BindingResult bindingResult) {
       List<Error> errors = new ArrayList<>();

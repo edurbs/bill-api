@@ -32,4 +32,12 @@ public class Person{
 
     @Embedded
     private Address address;
+
+    public void activate(){
+        this.active=true;
+    }
+
+    public void inactivate(){
+        this.active=false;
+    }
 }
