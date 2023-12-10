@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.edurbs.bill.api.model.Category;
 import com.edurbs.bill.api.repository.CategoryRepository;
@@ -36,7 +35,7 @@ public class CategoryResource {
     @PostMapping()    
     public ResponseEntity<Category> create(@Valid @RequestBody Category category, HttpServletResponse response) {
         Category newCategory = categoryRepository.save(category);        
-        URI uri = getUri(response, newCategory);
+        URI uri = ResourceHelper.getUri(response, newCategory.getId());
         return ResponseEntity.created(uri).body(newCategory);        
     }
 
@@ -50,13 +49,5 @@ public class CategoryResource {
     
     
     
-    private URI getUri(HttpServletResponse response, Category newCategory) {
-        URI uri = ServletUriComponentsBuilder
-                .fromCurrentRequestUri()
-                .path("/{id}")
-                .buildAndExpand(newCategory.getId())
-                .toUri();
-        response.setHeader("Location", uri.toASCIIString());
-        return uri;
-    }
+    
 }

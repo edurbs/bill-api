@@ -1,5 +1,6 @@
 package com.edurbs.bill.api.model;
 
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -12,10 +13,10 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Entity
-@Table(name = "category")
+@Table(name="person")
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class Category  {
+public class Person{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,7 +24,12 @@ public class Category  {
     private Long id; 
 
     @NotNull
-    @Size(min=3, max = 50)
+    @Size(min = 2, max = 255)
     private String name;
 
+    @NotNull
+    private Boolean active;
+
+    @Embedded
+    private Address address;
 }
