@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
 @ControllerAdvice
 public class BillExceptionHandler extends ResponseEntityExceptionHandler {
 
@@ -20,9 +23,20 @@ public class BillExceptionHandler extends ResponseEntityExceptionHandler {
      @Override
      protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
              HttpHeaders headers, HttpStatus status, WebRequest request) {
-         var body = messageSource.getMessage("mensagem.invalida",null,LocaleContextHolder.getLocale());
-         var myStatus = HttpStatus.BAD_REQUEST;
-         return handleExceptionInternal(ex, body, headers, myStatus, request);
+         
+        String userMessage = messageSource.getMessage("mensagem.invalida",null,LocaleContextHolder.getLocale());
+        String debugMessage = ex.getCause().toString();
+        Error body = new Error(userMessage, debugMessage);
+         
+        var myStatus = HttpStatus.BAD_REQUEST;
+        return handleExceptionInternal(ex, body, headers, myStatus, request);
+     }
+
+     @Data
+     @AllArgsConstructor
+     public static class Error {
+        private String userMessage;
+        private String debugMessage;
      }
 
 
