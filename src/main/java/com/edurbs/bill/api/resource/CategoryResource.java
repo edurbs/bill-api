@@ -23,7 +23,7 @@ import com.edurbs.bill.api.repository.CategoryRepository;
 
 
 @RestController
-@RequestMapping("/category")
+@RequestMapping("/categories")
 public class CategoryResource {
 
     @Autowired

@@ -29,7 +29,7 @@ import com.edurbs.bill.api.service.PersonService;
 
 
 @RestController
-@RequestMapping("/person")
+@RequestMapping("/persons")
 public class PersonResource {
 
     @Autowired
