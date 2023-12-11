@@ -15,6 +15,7 @@ import com.edurbs.bill.api.model.Bill;
 import com.edurbs.bill.api.model.Person;
 import com.edurbs.bill.api.repository.BillRepository;
 import com.edurbs.bill.api.repository.PersonRepository;
+import com.edurbs.bill.api.repository.filter.BillFilter;
 import com.edurbs.bill.api.service.exception.PersonInactiveException;
 import com.edurbs.bill.api.service.exception.PersonInexistentException;
 
@@ -54,5 +55,9 @@ public class BillService {
             throw new PersonInactiveException();
         }
         return person;
+    }
+
+    public List<Bill> filter(BillFilter billFilter) {        
+        return billRepository.queryFiltredBills(billFilter.getDescription(), billFilter.getFromDueDate(), billFilter.getToDueDate());
     }
 }

@@ -22,9 +22,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.edurbs.bill.api.exceptionhandler.BillExceptionHandler.Error;
 import com.edurbs.bill.api.model.Bill;
+import com.edurbs.bill.api.repository.filter.BillFilter;
 import com.edurbs.bill.api.service.BillService;
 import com.edurbs.bill.api.service.exception.PersonInactiveException;
 import com.edurbs.bill.api.service.exception.PersonInexistentException;
+
 
 
 
@@ -38,16 +40,22 @@ public class BillResource {
     @Autowired
     private MessageSource messageSource;
     
-    @GetMapping
+/*     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<Bill> findAll() {
         return billService.findAll();
-    }
+    } */
 
     @GetMapping("/{id}")
     public ResponseEntity<Bill> findById(@PathVariable Long id) {
         return billService.findById(id);
     }
+
+    @GetMapping()
+    public List<Bill> filter(BillFilter billFilter) {
+        return billService.filter(billFilter);
+    }
+    
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
