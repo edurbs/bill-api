@@ -43,6 +43,7 @@ public class Bill {
     @Column(name="pay_date")
     private LocalDate payDate;
         
+    @NotNull
     private BigDecimal amount;
 
     private String notes;
