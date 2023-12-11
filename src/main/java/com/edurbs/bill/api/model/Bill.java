@@ -13,6 +13,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -30,7 +31,8 @@ public class Bill {
     @EqualsAndHashCode.Include
     private Long id;
 
-    @NotNull
+    @NotNull    
+    @NotBlank
     @Size(max = 50)
     private String description;
 
