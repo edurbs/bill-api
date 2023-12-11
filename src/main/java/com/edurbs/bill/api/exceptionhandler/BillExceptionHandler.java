@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,50 +34,37 @@ public class BillExceptionHandler extends ResponseEntityExceptionHandler {
    @Override
    protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
          HttpHeaders headers, HttpStatus status, WebRequest request) {
-
-      String userMessage = messageSource.getMessage("mensagem.invalida", null, LocaleContextHolder.getLocale());
-      String debugMessage = ex.getCause() != null ? ex.getCause().toString() : ex.toString();
-
-      List<Error> body = Arrays.asList(new Error(userMessage, debugMessage));
-
-      var myStatus = HttpStatus.BAD_REQUEST;
-      return handleExceptionInternal(ex, body, headers, myStatus, request);
+      String message = "mensage.invalid";      
+      return handleExceptionInternal(ex, generateBodyWithAnError(ex, message), headers, HttpStatus.BAD_REQUEST, request);
    }
 
    @Override
    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
-         HttpHeaders headers, HttpStatus status, WebRequest request) {
-
-      var body = createErrorsList(ex.getBindingResult());
-
-      var myStatus = HttpStatus.BAD_REQUEST;
-      return handleExceptionInternal(ex, body, headers, myStatus, request);
+         HttpHeaders headers, HttpStatus status, WebRequest request) {      
+      return handleExceptionInternal(ex, createBodyWithErrorsList(ex.getBindingResult()), headers, HttpStatus.BAD_REQUEST, request);
    }
 
    @ExceptionHandler({ EmptyResultDataAccessException.class })
    public ResponseEntity<Object> handleEmptyResultDataAccessException(EmptyResultDataAccessException ex,
-         WebRequest request) {
-      String userMessage = messageSource.getMessage("recurso.nao-encontrado", null, LocaleContextHolder.getLocale());
-      String debugMessage = ex.toString();
-      List<Error> body = Arrays.asList(new Error(userMessage, debugMessage));
-      var status = HttpStatus.NOT_FOUND;
-      return handleExceptionInternal(ex, body, new HttpHeaders(), status, request);
+         WebRequest request) {      
+      String message = "resource.not-found";      
+      return handleExceptionInternal(ex, generateBodyWithAnError(ex, message), new HttpHeaders(), HttpStatus.NOT_FOUND, request);
+   }
 
+   @ExceptionHandler({InvalidDataAccessApiUsageException.class})
+   public ResponseEntity<Object> handeInvalidDataAccessApiUsageException(InvalidDataAccessApiUsageException ex, WebRequest request){
+      String message = "resource.invalid";
+      return handleExceptionInternal(ex, generateBodyWithAnError(ex, message), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
    }
 
    @ExceptionHandler({ DataIntegrityViolationException.class })
    public ResponseEntity<Object> handleDataIntegrityViolationException(DataIntegrityViolationException ex,
-         WebRequest request) {
-      String userMessage = messageSource.getMessage("recurso.operacao-nao-permitida", null,
-            LocaleContextHolder.getLocale());
-      String debugMessage = ExceptionUtils.getRootCauseMessage(ex);
-      List<Error> body = Arrays.asList(new Error(userMessage, debugMessage));
-      var status = HttpStatus.BAD_REQUEST;
-      var headers = new HttpHeaders();
-      return handleExceptionInternal(ex, body, headers, status, request);
+         WebRequest request) {      
+      String message = "resource.operation-not-allowed";
+      return handleExceptionInternal(ex, generateBodyWithAnError(ex, message), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
    }
 
-   private List<Error> createErrorsList(BindingResult bindingResult) {
+   private List<Error> createBodyWithErrorsList(BindingResult bindingResult) {
       List<Error> errors = new ArrayList<>();
       for (FieldError fieldError : bindingResult.getFieldErrors()) {
          var userMessage = messageSource.getMessage(fieldError, LocaleContextHolder.getLocale());
@@ -86,6 +73,14 @@ public class BillExceptionHandler extends ResponseEntityExceptionHandler {
       }
       return errors;
    }
+
+   private List<Error> generateBodyWithAnError(RuntimeException ex, String message) {
+      String userMessage = messageSource.getMessage(message, null, LocaleContextHolder.getLocale());
+      String debugMessage = ex.getCause() != null ? ex.getCause().toString() : ex.toString();
+      List<Error> body = Arrays.asList(new Error(userMessage, debugMessage));
+      return body;
+   }
+
 
    @Data
    @AllArgsConstructor

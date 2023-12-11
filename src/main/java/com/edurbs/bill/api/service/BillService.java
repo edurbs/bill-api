@@ -12,7 +12,11 @@ import org.springframework.stereotype.Service;
 
 import com.edurbs.bill.api.event.ResourceCreatedEvent;
 import com.edurbs.bill.api.model.Bill;
+import com.edurbs.bill.api.model.Person;
 import com.edurbs.bill.api.repository.BillRepository;
+import com.edurbs.bill.api.repository.PersonRepository;
+import com.edurbs.bill.api.service.exception.PersonInactiveException;
+import com.edurbs.bill.api.service.exception.PersonInexistentException;
 
 @Service
 public class BillService {
@@ -22,6 +26,9 @@ public class BillService {
 
     @Autowired
     private ApplicationEventPublisher publisher;
+
+    @Autowired
+    private PersonRepository personRepository;
 
     public List<Bill> findAll(){
         return billRepository.findAll();
@@ -35,7 +42,17 @@ public class BillService {
 
     public Bill create(@Valid Bill bill, HttpServletResponse response) {
         Bill billSaved = billRepository.save(bill);
+        findPersonById(bill);                
         publisher.publishEvent(new ResourceCreatedEvent(this, response, billSaved.getId()));
         return billSaved;
+    }
+
+    private Person findPersonById(Bill bill) {
+        Person person = personRepository.findById(bill.getPerson().getId())
+                .orElseThrow(()-> new PersonInexistentException());
+        if(person.isInactive()){
+            throw new PersonInactiveException();
+        }
+        return person;
     }
 }
