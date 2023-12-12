@@ -11,6 +11,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -63,6 +64,13 @@ public class BillResource {
         return billService.create(bill, response);
     }
 
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void remove(@PathVariable Long id){
+        billService.remove(id);
+    }
+
     @ExceptionHandler({PersonInactiveException.class})
     public ResponseEntity<Object> handlePersonInactiveException(PersonInactiveException ex){
         return getBodyWithError(ex, "person.inactive");        
@@ -73,6 +81,7 @@ public class BillResource {
         return getBodyWithError(ex, "person.inexistent");
     }
 
+
     private ResponseEntity<Object> getBodyWithError(RuntimeException ex, String errorMessage) {        
         String userMessage = messageSource.getMessage(errorMessage, null,
             LocaleContextHolder.getLocale());
@@ -80,5 +89,7 @@ public class BillResource {
         List<Error> body = Arrays.asList(new Error(userMessage, debugMessage));        
         return ResponseEntity.badRequest().body(body);
     }
+
+
     
 }

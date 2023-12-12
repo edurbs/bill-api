@@ -1,6 +1,7 @@
 package com.edurbs.bill.api.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -36,16 +37,25 @@ public class BillService {
     }
 
     public ResponseEntity<Bill> findById(Long id) {
-        return billRepository.findById(id)
+        return findBillById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+
 
     public Bill create(@Valid Bill bill, HttpServletResponse response) {
         Bill billSaved = billRepository.save(bill);
         findPersonById(bill);                
         publisher.publishEvent(new ResourceCreatedEvent(this, response, billSaved.getId()));
         return billSaved;
+    }
+
+    public List<Bill> filter(BillFilter billFilter) {        
+        return billRepository.queryFiltredBills(billFilter.getDescription(), billFilter.getFromDueDate(), billFilter.getToDueDate());
+    }
+
+    public void remove(Long id) {        
+        billRepository.deleteById(id);        
     }
 
     private Person findPersonById(Bill bill) {
@@ -57,7 +67,9 @@ public class BillService {
         return person;
     }
 
-    public List<Bill> filter(BillFilter billFilter) {        
-        return billRepository.queryFiltredBills(billFilter.getDescription(), billFilter.getFromDueDate(), billFilter.getToDueDate());
+    private Optional<Bill> findBillById(Long id) {
+        return billRepository.findById(id);
     }
+
+
 }
