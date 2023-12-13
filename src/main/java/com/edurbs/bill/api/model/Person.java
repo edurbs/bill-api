@@ -6,8 +6,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -41,10 +44,13 @@ public class Person{
         this.active=false;
     }
 
+    @Transient    
     public boolean isActive(){
         return this.active == true;
     }
 
+    @Transient
+    @JsonIgnore    
     public boolean isInactive(){
         return this.active == false;
     }

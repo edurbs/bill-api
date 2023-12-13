@@ -8,6 +8,9 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -50,8 +53,12 @@ public class BillService {
         return billSaved;
     }
 
-    public List<Bill> filter(BillFilter billFilter) {        
-        return billRepository.queryFiltredBills(billFilter.getDescription(), billFilter.getFromDueDate(), billFilter.getToDueDate());
+    public Page<Bill> filter(BillFilter billFilter, Pageable pageable) { 
+        
+        Page<Bill> page = billRepository.queryFiltredBills(pageable, billFilter.getDescription(), billFilter.getFromDueDate(), billFilter.getToDueDate());
+        Long total = page.getTotalElements();
+
+        return new PageImpl<>(page.getContent(), pageable, total);
     }
 
     public void remove(Long id) {        
