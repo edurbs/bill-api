@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
@@ -20,6 +21,7 @@ import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter{
 
     private static final int _30_MINUTES = 1800;
+    private static final int _24_HOURS = 3600 * 24;
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -27,28 +29,28 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Autowired
 	private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private UserDetailsService userDetailsService;
+
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         clients.inMemory()
                 .withClient("angular")
                 .secret(passwordEncoder.encode("@ngul@r0"))
                 .scopes("read", "write")
-                .authorizedGrantTypes("password")
+                .authorizedGrantTypes("password", "refresh_token")
                 .accessTokenValiditySeconds(_30_MINUTES)
-            .and()
-				.withClient("mobile")
-				.secret(passwordEncoder.encode("m0b1l30")) 
-				.scopes("read")
-				.authorizedGrantTypes("password")
-				.accessTokenValiditySeconds(_30_MINUTES);
+                .refreshTokenValiditySeconds(_24_HOURS);
     }
 
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
         endpoints
             .authenticationManager(authenticationManager)
-            .accessTokenConverter(accessTokenConverter())
-            .tokenStore(tokenStore());
+            .accessTokenConverter(accessTokenConverter())            
+            .tokenStore(tokenStore())
+            .userDetailsService(userDetailsService)
+            .reuseRefreshTokens(false);
     }
 
     @Bean

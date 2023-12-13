@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -16,9 +17,9 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
@@ -27,7 +28,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtGra
 
 @SuppressWarnings("deprecation")
 @EnableWebSecurity
-@EnableResourceServer
+@Configuration
 public class ResourceServerConfig extends WebSecurityConfigurerAdapter {
 
     @Override
@@ -41,7 +42,7 @@ public class ResourceServerConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests(requests -> requests
-                .antMatchers("/categories/").permitAll()
+                .antMatchers("/categories").permitAll()
                 .anyRequest().authenticated())
                 .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .csrf(csrf -> csrf.disable())
@@ -94,5 +95,13 @@ public class ResourceServerConfig extends WebSecurityConfigurerAdapter {
 
         return NimbusJwtDecoder.withSecretKey(secretKey).build();
     }
+
+    @Bean
+    @Override
+    public UserDetailsService userDetailsServiceBean() throws Exception {
+        return super.userDetailsServiceBean();
+    }
+
+
 
 }
