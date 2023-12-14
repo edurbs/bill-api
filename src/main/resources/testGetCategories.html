@@ -1,0 +1,17 @@
+<html>
+    <body>
+        <button onclick="find()">Find Category</button>
+        <script>
+            function printResponse(){
+                console.log(this.responseText);
+            }
+            function find() {
+                var req = new XMLHttpRequest();
+                req.addEventListener("load", printResponse);
+                req.open("GET", "http://localhost:8080/categories");                
+
+                req.send();
+            }
+        </script>
+    </body>
+</html>
