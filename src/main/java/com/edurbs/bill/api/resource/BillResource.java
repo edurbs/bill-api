@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.edurbs.bill.api.exceptionhandler.BillExceptionHandler.Error;
 import com.edurbs.bill.api.model.Bill;
 import com.edurbs.bill.api.repository.filter.BillFilter;
+import com.edurbs.bill.api.repository.projection.BillProjection;
 import com.edurbs.bill.api.service.BillService;
 import com.edurbs.bill.api.service.exception.PersonInactiveException;
 import com.edurbs.bill.api.service.exception.PersonInexistentException;
@@ -56,6 +57,11 @@ public class BillResource {
         return billService.filter(billFilter, pageable);
     }
     
+    @GetMapping(params = "projection")
+    @PreAuthorize("hasAuthority('ROLE_PESQUISAR_LANCAMENTO') and hasAuthority('SCOPE_read')")
+    public Page<BillProjection> project(BillFilter billFilter, Pageable pageable) {
+        return billService.project(billFilter, pageable);
+    }
 
     @PostMapping
     @PreAuthorize("hasAuthority('ROLE_CADASTRAR_LANCAMENTO') and hasAuthority('SCOPE_write')")

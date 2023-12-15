@@ -20,6 +20,7 @@ import com.edurbs.bill.api.model.Person;
 import com.edurbs.bill.api.repository.BillRepository;
 import com.edurbs.bill.api.repository.PersonRepository;
 import com.edurbs.bill.api.repository.filter.BillFilter;
+import com.edurbs.bill.api.repository.projection.BillProjection;
 import com.edurbs.bill.api.service.exception.PersonInactiveException;
 import com.edurbs.bill.api.service.exception.PersonInexistentException;
 
@@ -55,7 +56,18 @@ public class BillService {
 
     public Page<Bill> filter(BillFilter billFilter, Pageable pageable) { 
         
-        Page<Bill> page = billRepository.queryFiltredBills(pageable, billFilter.getDescription(), billFilter.getFromDueDate(), billFilter.getToDueDate());
+        Page<Bill> page = billRepository.queryFiltredBills(
+                pageable, billFilter.getDescription(), billFilter.getFromDueDate(), billFilter.getToDueDate()
+            );
+        Long total = page.getTotalElements();
+
+        return new PageImpl<>(page.getContent(), pageable, total);
+    }
+
+    public Page<BillProjection> project(BillFilter billFilter, Pageable pageable) {
+        Page<BillProjection> page = billRepository.queryFiltredBillsProjection(
+                pageable, billFilter.getDescription(), billFilter.getFromDueDate(), billFilter.getToDueDate()
+            );
         Long total = page.getTotalElements();
 
         return new PageImpl<>(page.getContent(), pageable, total);
@@ -68,7 +80,7 @@ public class BillService {
     private Person findPersonById(Bill bill) {
         Person person = personRepository.findById(bill.getPerson().getId())
                 .orElseThrow(()-> new PersonInexistentException());
-        if(person.isInactive()){
+        if(!person.isActive()){
             throw new PersonInactiveException();
         }
         return person;
@@ -77,6 +89,8 @@ public class BillService {
     private Optional<Bill> findBillById(Long id) {
         return billRepository.findById(id);
     }
+
+    
 
 
 }

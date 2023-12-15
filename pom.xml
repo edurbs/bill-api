@@ -90,6 +90,12 @@
 			<artifactId>spring-security-jwt</artifactId>
 			<version>1.1.1.RELEASE</version>
 		</dependency>
+		<!-- https://github.com/vladmihalcea/hypersistence-utils -->
+		<dependency>
+			<groupId>io.hypersistence</groupId>
+			<artifactId>hypersistence-utils-hibernate-55</artifactId>
+			<version>3.6.1</version>
+		</dependency>
 
 	</dependencies>
 

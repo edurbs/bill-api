@@ -2,10 +2,14 @@ package com.edurbs.bill.api;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.ResourceBundleMessageSource;
 
+import com.edurbs.bill.api.config.property.BillApiProperty;
+
 @SpringBootApplication
+@EnableConfigurationProperties(value = BillApiProperty.class)
 public class BillApiApplication {
 
 	public static void main(String[] args) {
@@ -19,5 +23,6 @@ public class BillApiApplication {
 		messageSource.setDefaultEncoding("UTF-8");
 		return messageSource;
 	}
+
 
 }
