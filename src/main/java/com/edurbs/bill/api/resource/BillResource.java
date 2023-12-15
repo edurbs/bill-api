@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,24 +44,21 @@ public class BillResource {
     @Autowired
     private MessageSource messageSource;
     
-/*     @GetMapping
-    @ResponseStatus(HttpStatus.OK)
-    public List<Bill> findAll() {
-        return billService.findAll();
-    } */
-
     @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLE_PESQUISAR_LANCAMENTO') and hasAuthority('SCOPE_read')")
     public ResponseEntity<Bill> findById(@PathVariable Long id) {
         return billService.findById(id);
     }
 
     @GetMapping()
+    @PreAuthorize("hasAuthority('ROLE_PESQUISAR_LANCAMENTO') and hasAuthority('SCOPE_read')")
     public Page<Bill> filter(BillFilter billFilter, Pageable pageable) {
         return billService.filter(billFilter, pageable);
     }
     
 
     @PostMapping
+    @PreAuthorize("hasAuthority('ROLE_CADASTRAR_LANCAMENTO') and hasAuthority('SCOPE_write')")
     @ResponseStatus(HttpStatus.CREATED)
     public Bill create(@Valid @RequestBody Bill bill, HttpServletResponse response) {
         return billService.create(bill, response);
@@ -68,6 +66,7 @@ public class BillResource {
 
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLE_REMOVER_LANCAMENTO') and hasAuthority('SCOPE_write')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void remove(@PathVariable Long id){
         billService.remove(id);
