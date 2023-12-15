@@ -10,16 +10,21 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+
+import com.edurbs.bill.api.config.property.BillApiProperty;
 
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class CorsFilter implements Filter {
 
-    private static final String _1_HOUR = "3600";
-    private String originAllowed = "http://localhost:8081"; // TODO configure to other enviroments
+	@Autowired
+	private BillApiProperty billApiProperty;
+
+    private static final String _1_HOUR = "3600";    
 
     @Override
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain)
@@ -28,10 +33,10 @@ public class CorsFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) req;
 		HttpServletResponse response = (HttpServletResponse) resp;
 		
-		response.setHeader("Access-Control-Allow-Origin", originAllowed);
+		response.setHeader("Access-Control-Allow-Origin", billApiProperty.getAllowedOrigin());
         response.setHeader("Access-Control-Allow-Credentials", "true");
 		
-		if ("OPTIONS".equals(request.getMethod()) && originAllowed.equals(request.getHeader("Origin"))) {
+		if ("OPTIONS".equals(request.getMethod()) && billApiProperty.getAllowedOrigin().equals(request.getHeader("Origin"))) {
 			response.setHeader("Access-Control-Allow-Methods", "POST, GET, DELETE, PUT, OPTIONS");
         	response.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type, Accept");
         	response.setHeader("Access-Control-Max-Age", _1_HOUR);
