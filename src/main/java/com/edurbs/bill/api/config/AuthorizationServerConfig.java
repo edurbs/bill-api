@@ -5,7 +5,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
@@ -21,13 +20,11 @@ import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter{
 
     private static final int _30_MINUTES = 1800;
+
     private static final int _24_HOURS = 3600 * 24;
 
     @Autowired
     private AuthenticationManager authenticationManager;
-
-    @Autowired
-	private PasswordEncoder passwordEncoder;
 
     @Autowired
     private UserDetailsService userDetailsService;
@@ -36,10 +33,17 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         clients.inMemory()
                 .withClient("angular")
-                .secret(passwordEncoder.encode("@ngul@r0"))
+                .secret("$2a$10$.m21PkcywElMcVOF2VwZVubaof8bcMZu0E95U326cM1F7kd1Ksc0y")
                 .scopes("read", "write")
                 .authorizedGrantTypes("password", "refresh_token")
-                .accessTokenValiditySeconds(20)
+                .accessTokenValiditySeconds(1800)
+                .refreshTokenValiditySeconds(_24_HOURS)
+            .and()
+                .withClient("mobile")
+                .secret("$2a$10$t2gRGIcKa5Diw48r0V2Suu0w83FHh7h4bnu0RRs3XH6LwqE2H7xRm")
+                .scopes("read")
+                .authorizedGrantTypes("password", "refresh_token")
+                .accessTokenValiditySeconds(_30_MINUTES)
                 .refreshTokenValiditySeconds(_24_HOURS);
     }
 
