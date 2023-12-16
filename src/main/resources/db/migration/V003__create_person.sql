@@ -35,7 +35,7 @@ values (
         "Boné Azul",
         "Macapá",
         "AP",
-        "68909-607"
+        "68.909-607"
     );
 
 insert into
@@ -59,7 +59,7 @@ values (
         "Congós",
         "Macapá",
         "AP",
-        "68904-345"
+        "68.904-345"
     );
 
 insert into
@@ -83,7 +83,7 @@ values (
         "Jardim São Conrado",
         "Campo Grande",
         "MS",
-        "79093-310"
+        "79.093-310"
     );
 
 insert into
@@ -107,7 +107,7 @@ values (
         "Golden Garden Residence Condomínio",
         "Arapongas",
         "PR",
-        "86701-865"
+        "86.701-865"
     );
 
 insert into
@@ -131,7 +131,7 @@ values (
         "Jardins",
         "Aracaju",
         "SE",
-        "49025-745"
+        "49.025-745"
     );
 
 insert into
@@ -155,7 +155,7 @@ values (
         "Toneto",
         "Nova Xavantina",
         "MT",
-        "78690-000"
+        "78.690-000"
     );
 
 insert into
@@ -179,7 +179,7 @@ values (
         "Praia",
         "Nova Xavantina",
         "MT",
-        "78690-000"
+        "78.690-000"
     );
 
 insert into
@@ -203,7 +203,7 @@ values (
         "Catanduvas",
         "Varginha",
         "MG",
-        "37010-070"
+        "37.010-070"
     );
 
 insert into
@@ -227,7 +227,7 @@ values (
         "Rural",
         "Piumhi",
         "MG",
-        "35015-071"
+        "35.015-071"
     );
 
 insert into
@@ -251,5 +251,5 @@ values (
         "Rural",
         "Piumhi",
         "MG",
-        "35015-071"
+        "35.015-071"
     );
