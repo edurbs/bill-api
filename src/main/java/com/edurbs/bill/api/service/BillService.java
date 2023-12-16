@@ -6,6 +6,7 @@ import java.util.Optional;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
@@ -77,6 +78,29 @@ public class BillService {
         billRepository.deleteById(id);        
     }
 
+    public Bill update(Long id, @Valid Bill bill) {        
+        Bill savedBill = billRepository.findById(id)
+                .orElseThrow(()-> new IllegalArgumentException());
+        
+        if(!bill.getPerson().equals(savedBill.getPerson())){
+            validatePerson(bill.getPerson());
+        }
+        BeanUtils.copyProperties(bill, savedBill, "id");
+
+        return billRepository.save(savedBill);
+    }
+
+    private void validatePerson(Person person) {
+        Person personFound =null;
+        if(person.getId() != null){
+            personFound = personRepository.findById(person.getId())
+                    .orElseThrow(() -> new PersonInexistentException());
+            if(!personFound.isActive()){
+                throw new PersonInexistentException();
+            }
+        }        
+    }
+
     private Person findPersonById(Bill bill) {
         Person person = personRepository.findById(bill.getPerson().getId())
                 .orElseThrow(()-> new PersonInexistentException());
@@ -90,7 +114,6 @@ public class BillService {
         return billRepository.findById(id);
     }
 
-    
 
 
 }

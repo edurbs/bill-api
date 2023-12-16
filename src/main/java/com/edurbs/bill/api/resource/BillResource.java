@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -31,6 +32,7 @@ import com.edurbs.bill.api.repository.projection.BillProjection;
 import com.edurbs.bill.api.service.BillService;
 import com.edurbs.bill.api.service.exception.PersonInactiveException;
 import com.edurbs.bill.api.service.exception.PersonInexistentException;
+
 
 
 
@@ -76,6 +78,19 @@ public class BillResource {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void remove(@PathVariable Long id){
         billService.remove(id);
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLE_CADASTRAR_LANCAMENTO') and hasAuthority('SCOPE_write')")
+    public ResponseEntity<Bill> update(@PathVariable Long id, @Valid @RequestBody Bill bill) {
+        try {
+            Bill savedBill = billService.update(id, bill);
+            return ResponseEntity.ok(savedBill);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
+        
+     
     }
 
     @ExceptionHandler({PersonInactiveException.class})
