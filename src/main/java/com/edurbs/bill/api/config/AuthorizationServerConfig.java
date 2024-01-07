@@ -1,13 +1,13 @@
 package com.edurbs.bill.api.config;
 
 import java.util.Arrays;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
@@ -17,14 +17,13 @@ import org.springframework.security.oauth2.provider.token.TokenEnhancerChain;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
-
 import com.edurbs.bill.api.config.token.CustomTokenEnhacer;
 
 
+@Profile("oauth-security")
 @SuppressWarnings("deprecation")
 @Configuration
 @EnableAuthorizationServer
-@Profile("oauth-security")
 public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter{
 
     private static final int _30_MINUTES = 1800;
@@ -35,20 +34,23 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     private AuthenticationManager authenticationManager;
 
     @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
     private UserDetailsService userDetailsService;
 
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         clients.inMemory()
                 .withClient("angular")
-                .secret("$2a$10$.m21PkcywElMcVOF2VwZVubaof8bcMZu0E95U326cM1F7kd1Ksc0y")
+                .secret(passwordEncoder.encode("@ngul@r0"))
                 .scopes("read", "write")
                 .authorizedGrantTypes("password", "refresh_token")
                 .accessTokenValiditySeconds(1800)
                 .refreshTokenValiditySeconds(_24_HOURS)
             .and()
                 .withClient("mobile")
-                .secret("$2a$10$t2gRGIcKa5Diw48r0V2Suu0w83FHh7h4bnu0RRs3XH6LwqE2H7xRm")
+                .secret(passwordEncoder.encode("m0b1l30"))
                 .scopes("read")
                 .authorizedGrantTypes("password", "refresh_token")
                 .accessTokenValiditySeconds(_30_MINUTES)
@@ -61,11 +63,10 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
         tokenEnhancerChain.setTokenEnhancers(Arrays.asList(tokenEnhancer(), accessTokenConverter()));
 
         endpoints
-            .tokenStore(tokenStore())
-            .tokenEnhancer(tokenEnhancerChain)
             .authenticationManager(authenticationManager)
-            .accessTokenConverter(accessTokenConverter())            
             .userDetailsService(userDetailsService)
+            .tokenEnhancer(tokenEnhancerChain)
+            .tokenStore(tokenStore())
             .reuseRefreshTokens(false);
     }
 
